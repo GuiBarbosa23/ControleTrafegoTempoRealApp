@@ -28,18 +28,14 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -58,7 +54,7 @@ public class TelaPrincipal extends AppCompatActivity implements LocationListener
     //https://www.youtube.com/watch?v=Ak1O9Gip-pg&list=WL
 
     private TextView nomeUsuario, emailUsuario;
-    private Button bt_deslogar;
+    private Button bt_deslogar, bt_deletar;
     private Switch sw_emergencia,sw_gravar;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     String usuarioID;
@@ -70,7 +66,8 @@ public class TelaPrincipal extends AppCompatActivity implements LocationListener
     double longitudeAtual= 0;
     double longitudeUltima= 0;
     double longitudePenultima = 0;
-    // private GoogleMap mMap;
+    //private GoogleMap mMap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,21 +76,19 @@ public class TelaPrincipal extends AppCompatActivity implements LocationListener
         getSupportActionBar().hide();
         IniciarComponentes();
 
-
         //  SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
         //        .findFragmentById(R.id.map);
         // mapFragment.getMapAsync(this);
 
-        //check permission
+        // Verifica permissão
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
-            // Permission is not granted
+            // A permissão não é concedida
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1000);
             //ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, 1000);
         } else {
-            //start the program if permission is granted
+            // Inicia o programa se a permissão for concedida
             getLocation();
         }
-
 
         bt_deslogar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,10 +101,28 @@ public class TelaPrincipal extends AppCompatActivity implements LocationListener
             }
         });
 
+        bt_deletar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.d("TAG","Conta deletada");
+                        FirebaseAuth.getInstance().signOut();
+                        Intent intent = new Intent(TelaPrincipal.this, FormLogin.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+            }
+        });
+
         sw_emergencia.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SimpleDateFormat formatter = new SimpleDateFormat(
-                        "yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date curDate = new Date(System.currentTimeMillis());
                 String strdatetimenow = formatter.format(curDate);
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -124,16 +137,16 @@ public class TelaPrincipal extends AppCompatActivity implements LocationListener
 
         sw_gravar.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                startService();
+                //startService();
             }
         });
     }
 
-    //  @Override
+    // @Override
     // public void onMapReady(GoogleMap googleMap) {
     //     mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
+    // Add a marker in Sydney and move the camera
     //   LatLng sydney = new LatLng(-34, 151);
     //    mMap.addMarker(new MarkerOptions()
     //         .position(sydney)
@@ -144,7 +157,8 @@ public class TelaPrincipal extends AppCompatActivity implements LocationListener
     @Override
     protected void onStart() {
         super.onStart();
-        startService();
+        //startService();
+
         String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         usuarioID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -167,26 +181,27 @@ public class TelaPrincipal extends AppCompatActivity implements LocationListener
     }
 
     public void startService(){
-        Intent serviceIntent = new Intent(this,LocationService.class);
-        Log.i("Script","CHAVE: " + new Boolean(sw_gravar.isChecked()).toString());
-        serviceIntent.putExtra("VALOR_CHAVE",new Boolean(sw_gravar.isChecked()).toString());
+        Intent serviceIntent = new Intent(this, LocationService.class);
+        Log.i("Script", "CHAVE: " + new Boolean(sw_gravar.isChecked()).toString());
+        serviceIntent.putExtra("VALOR_CHAVE", new Boolean(sw_gravar.isChecked()).toString());
         this.startService(serviceIntent);
     }
 
+    //Linka as variavéis da activity_tela_principal.xml as variáveis de TelaPrincipal.java
     private void IniciarComponentes(){
+
         nomeUsuario = findViewById(R.id.textNameUser);
         emailUsuario = findViewById(R.id.textEmailUser);
         bt_deslogar = findViewById(R.id.bt_deslogar);
+        bt_deletar = findViewById(R.id.bt_deletar);
         sw_emergencia = findViewById(R.id.sw_emergencia);
         sw_gravar = findViewById(R.id.sw_gravar);
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
-        //Assign variable
         textViewLatitude = findViewById(R.id.textViewLatitude);
         textViewLongitude = findViewById(R.id.textViewLongitude);
         textViewEndereco = findViewById(R.id.textViewEndereco);
         textViewVelocidade = findViewById(R.id.textViewVelocidade);
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
     }
 
@@ -200,17 +215,14 @@ public class TelaPrincipal extends AppCompatActivity implements LocationListener
             textViewLongitude.setText("nulo");
             textViewEndereco.setText("nulo");
 
-
         } else {
-
-
-            //float nCurrentSpeed = location.getSpeed();
+            // Carrega a velocidade em km/h
             float nCurrentSpeed = location.getSpeed() * 3.6f;
-
             int velocidadeArredondada = Math.round(nCurrentSpeed);
-            //Get velocidade
-            //float nCurrentSpeed = location.getSpeed();
             textViewVelocidade.setText("Velocidade: " + velocidadeArredondada + " km/h" );
+
+            // Carrega a velocidade em m/s
+            //float nCurrentSpeed = location.getSpeed();
             //textViewVelocidade.setText("Velocidade: "+ String.format("%.2f", nCurrentSpeed)+ " m/s" );
 
             latitudeUltima = latitudePenultima;
@@ -221,10 +233,11 @@ public class TelaPrincipal extends AppCompatActivity implements LocationListener
             longitudePenultima = longitudeAtual;
             longitudeAtual = location.getLongitude();
 
-            //Get Latitude
+            // Carrega a Latitude
             double nCurrentLatitude = latitudeAtual;
             textViewLatitude.setText( "Lat: "+String.format("%.9f", nCurrentLatitude));
-            //Get Longitude
+
+            // Carrega a Longitude
             double nCurrentLongitude = longitudeAtual;
             textViewLongitude.setText("Lon: "+String.format("%.9f", nCurrentLongitude));
 
@@ -243,14 +256,13 @@ public class TelaPrincipal extends AppCompatActivity implements LocationListener
                 e.printStackTrace();
             }
 
-            //Get Longitude
+            // Carrega a Longitude
             textViewEndereco.setText("Endereço :"+ String.format(address));
 
-            //if (sw_gravar.isChecked()) {
-            if (false) {
+            if (sw_gravar.isChecked()) {
+            //if (false) {
                 //Atualiza Banco de Dados
-                SimpleDateFormat formatter = new SimpleDateFormat(
-                        "yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date curDate = new Date(System.currentTimeMillis());
                 String strdatetimenow = formatter.format(curDate);
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -258,15 +270,16 @@ public class TelaPrincipal extends AppCompatActivity implements LocationListener
                 Map<String, Object> leitura_app = new HashMap<>();
                 leitura_app.put("data_hora_atualizacao", strdatetimenow);
                 leitura_app.put("latitude_atual", latitudeAtual);
-                leitura_app.put("latitude_ultima", latitudeUltima);
-                leitura_app.put("latitude_penultima", latitudePenultima);
+                //leitura_app.put("latitude_ultima", latitudeUltima);
+                //leitura_app.put("latitude_penultima", latitudePenultima);
                 leitura_app.put("longitude_atual", longitudeAtual);
-                leitura_app.put("longitude_ultima", longitudeUltima);
-                leitura_app.put("longitude_penultima", longitudePenultima);
+                //leitura_app.put("longitude_ultima", longitudeUltima);
+                //leitura_app.put("longitude_penultima", longitudePenultima);
                 leitura_app.put("velocidade", velocidadeArredondada);
-                leitura_app.put("Endereco", address);
-                leitura_app.put("cep", zip);
+                //leitura_app.put("Endereco", address);
+                //leitura_app.put("cep", zip);
                 leitura_app.put("emergencia", sw_emergencia.isChecked());
+                leitura_app.put("flagLeituraSql", true);
 
                 usuarioID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -292,10 +305,7 @@ public class TelaPrincipal extends AppCompatActivity implements LocationListener
                 //}, 5000);   //5 seconds
             }
         }
-
-
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -303,25 +313,19 @@ public class TelaPrincipal extends AppCompatActivity implements LocationListener
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getLocation();
             } else {
-
                 finish();
             }
-
         }
-
     }
 
     private void getLocation(){
         LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         if (lm != null){
-            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,5000,0,this);
-            //commented, this is from the old version
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,3000,0,this);
+            // Comentado, isso é da versão antiga
             // this.onLocationChanged(null);
         }
-        Toast.makeText(this,"Aguardando conexão com GPS!", Toast.LENGTH_SHORT).show();
-
-
+        Toast.makeText(this,"Aguardando conexão GPS!", Toast.LENGTH_SHORT).show();
     }
-
 }

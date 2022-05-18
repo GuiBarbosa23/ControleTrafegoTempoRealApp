@@ -35,23 +35,24 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class FormCadastro extends AppCompatActivity {
 
-    //Declaração de todas as variavéis
+    // Declaração de todas as variavéis
     private EditText edit_nome, edit_email, edit_senha, edit_placa, edit_tag;
     private CheckBox check_pedestre, check_motorista;
     private Spinner spinner_def, spinner_veiculos;
     private Button bt_cadastrar;
     private TextView text_def, text_veiculo;
     private ImageView im_help;
-    String[] mensagens = {"Preencha todos os campos", "Cadastro realizado com sucesso", "A placa deve conter 7 caracteres", "Selecione uma ou as duas opções", "Selecione um tipo de veículo","Possui mobilidade reduzida?"};
+    String[] mensagens = {"Preencha todos os campos", "Cadastro realizado com sucesso", "A placa deve conter 7 caracteres", "Selecione uma ou as duas opções", "Selecione um tipo de veículo","Possui mobilidade reduzida?", "Não utilize caracteres especiais no campo da placa", "Somente números e as letras A, B, C, D, E e F são permitidas para Tag", "A TAG deve conter 8 caracteres"};
     String[] def = {"Selecione...", "Sim", "Não"};
-    String[] veiculo = {"Selecione...", "Passeio", "Moto","Caminhão", "Ônibus", "Táxi/Uber", "Policial", "Ambulância", "Bombeiro"};
+    String[] veiculo = {"Selecione...", "Passeio", "Moto","Caminhão", "Ônibus", "Policial", "Ambulância", "Bombeiro"};
     String usuarioID;
 
-    //Principal
+    // Principal
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +61,7 @@ public class FormCadastro extends AppCompatActivity {
         getSupportActionBar().hide();
         IniciarComponentes();
 
-        //Check Pedestre
+        // Check Pedestre
         check_pedestre.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -89,7 +90,7 @@ public class FormCadastro extends AppCompatActivity {
             }
         });
 
-        //Check Motorista
+        // Check Motorista
         check_motorista.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -119,15 +120,15 @@ public class FormCadastro extends AppCompatActivity {
             }
         });
 
-        //Linka Spinner com a String-Array (def) e desabilita o primeiro item
+        // Linka Spinner com a String-Array (def) e desabilita o primeiro item
         final ArrayAdapter<String> spinnerArrayAdapter_1 = new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,def){
             @Override
             public boolean isEnabled(int position){
                 if(position == 0){
-                    //Desabilita a primeira posição (hint)
+                    // Desabilita a primeira posição (hint)
                     return false;
                 }else{
-                   return true;
+                    return true;
                 }
             }
 
@@ -145,16 +146,16 @@ public class FormCadastro extends AppCompatActivity {
             }
         };
 
-        //Linka o setAdapter_1 ao Spinner de Mobilidade Reduzida
+        // Linka o setAdapter_1 ao Spinner de Mobilidade Reduzida
         spinnerArrayAdapter_1.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner_def.setAdapter(spinnerArrayAdapter_1);
 
-        //Linka Spinner com a String-Array (veiculo) e desabilita o primeiro item
+        // Linka Spinner com a String-Array (veiculo) e desabilita o primeiro item
         final ArrayAdapter<String> spinnerArrayAdapter_2 = new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,veiculo){
             @Override
             public boolean isEnabled(int position){
                 if(position == 0){
-                    //Desabilita a primeira posição (hint)
+                    // Desabilita a primeira posição (hint)
                     return false;
                 }else{
                     return true;
@@ -166,7 +167,7 @@ public class FormCadastro extends AppCompatActivity {
                 View view = super.getDropDownView(position, convertView, parent);
                 TextView tv = (TextView) view;
                 if(position == 0){
-                    //Deixa o hint com a cor cinza ( efeito de desabilitado)
+                    // Deixa o hint com a cor cinza ( efeito de desabilitado)
                     tv.setTextColor(Color.GRAY);
                 }else{
                     tv.setTextColor(Color.BLACK);
@@ -175,11 +176,11 @@ public class FormCadastro extends AppCompatActivity {
             }
         };
 
-        //Linka o setAdapter_2 ao Spinner de Tipo de Veículo
+        // Linka o setAdapter_2 ao Spinner de Tipo de Veículo
         spinnerArrayAdapter_2.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner_veiculos.setAdapter(spinnerArrayAdapter_2);
 
-        //Pop-up Ajuda
+        // Pop-up Ajuda
         im_help.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -191,7 +192,7 @@ public class FormCadastro extends AppCompatActivity {
             }
         });
 
-        //Botão Cadastrar
+        // Botão Cadastrar
         bt_cadastrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -199,8 +200,8 @@ public class FormCadastro extends AppCompatActivity {
                 String nome = edit_nome.getText().toString();
                 String email = edit_email.getText().toString();
                 String senha = edit_senha.getText().toString();
-                String tag = edit_tag.getText().toString();
-                String placa = edit_placa.getText().toString();
+                String tag = edit_tag.getText().toString().toUpperCase(Locale.ROOT);
+                String placa = edit_placa.getText().toString().toUpperCase(Locale.ROOT);
                 int car = spinner_veiculos.getLastVisiblePosition();
                 int mob = spinner_def.getLastVisiblePosition();
 
@@ -226,6 +227,21 @@ public class FormCadastro extends AppCompatActivity {
                         snackbar.setBackgroundTint(Color.WHITE);
                         snackbar.setTextColor(Color.BLACK);
                         snackbar.show();
+                    }else if(check_pedestre.isChecked() & ((tag.length() != 8 ))){
+                        Snackbar snackbar = Snackbar.make(view, mensagens[8], Snackbar.LENGTH_SHORT);
+                        snackbar.setBackgroundTint(Color.WHITE);
+                        snackbar.setTextColor(Color.BLACK);
+                        snackbar.show();
+                    }else if(placa.contains("!") || placa.contains("?") || placa.contains("@") || placa.contains("#") || placa.contains("$") || placa.contains("%") || placa.contains("(") || placa.contains(")") || placa.contains("[") || placa.contains("]") || placa.contains("{") || placa.contains("}") || placa.contains("/") || placa.contains("*") || placa.contains("-") || placa.contains("+") || placa.contains(",") || placa.contains(".") || placa.contains(";") || placa.contains(":") || placa.contains("<") || placa.contains(">") || placa.contains("&") || placa.contains("Ç") || placa.contains("Ã") || placa.contains("Õ") || placa.contains("Á") || placa.contains("É") || placa.contains("Í") || placa.contains("Ó") || placa.contains("Ú") || placa.contains("Â") || placa.contains("Ê") || placa.contains("Î") || placa.contains("Ô") || placa.contains("Û") || placa.contains("À") || placa.contains("=") || placa.contains("_") || placa.contains("|") || placa.contains(" ") || placa.contains("~") || placa.contains("´") || placa.contains("^") || placa.contains("`")){
+                        Snackbar snackbar = Snackbar.make(view, mensagens[6], Snackbar.LENGTH_SHORT);
+                        snackbar.setBackgroundTint(Color.WHITE);
+                        snackbar.setTextColor(Color.BLACK);
+                        snackbar.show();
+                    }else if(tag.contains("!") || tag.contains("?") || tag.contains("@") || tag.contains("#") || tag.contains("$") || tag.contains("%") || tag.contains("(") || tag.contains(")") || tag.contains("[") || tag.contains("]") || tag.contains("{") || tag.contains("}") || tag.contains("/") || tag.contains("*") || tag.contains("-") || tag.contains("+") || tag.contains(",") || tag.contains(".") || tag.contains(";") || tag.contains(":") || tag.contains("<") || tag.contains(">") || tag.contains("&") || tag.contains("Ç") || tag.contains("Ã") || tag.contains("Õ") || tag.contains("Á") || tag.contains("É") || tag.contains("Í") || tag.contains("Ó") || tag.contains("Ú") || tag.contains("Â") || tag.contains("Ê") || tag.contains("Î") || tag.contains("Ô") || tag.contains("Û") || tag.contains("À") || tag.contains("=") || tag.contains("_") || tag.contains("|") || tag.contains(" ") || tag.contains("~") || tag.contains("´") || tag.contains("^") || tag.contains("`") || tag.contains("G") || tag.contains("H") || tag.contains("I") || tag.contains("J") || tag.contains("K") || tag.contains("L") || tag.contains("M") || tag.contains("N") || tag.contains("O") || tag.contains("P") || tag.contains("Q") || tag.contains("R") || tag.contains("S") || tag.contains("T") || tag.contains("U") || tag.contains("V") || tag.contains("W") || tag.contains("X") || tag.contains("Y") || tag.contains("Z")){
+                        Snackbar snackbar = Snackbar.make(view, mensagens[7], Snackbar.LENGTH_SHORT);
+                        snackbar.setBackgroundTint(Color.WHITE);
+                        snackbar.setTextColor(Color.BLACK);
+                        snackbar.show();
                     }else{
                         CadastrarUsusario(view);
                     }
@@ -240,7 +256,7 @@ public class FormCadastro extends AppCompatActivity {
         });
     }
 
-    //Firebase Authetication - Cadastro de usuário e senha para autenticação
+    // Firebase Authetication - Cadastro de usuário e senha para autenticação
     private void CadastrarUsusario(View view){
 
         String email = edit_email.getText().toString();
@@ -286,17 +302,16 @@ public class FormCadastro extends AppCompatActivity {
                 }
             }
         });
-
     }
 
-    //Firestore Database - Salva informações dos usuários
+    // Firestore Database - Salva informações dos usuários
     private void SalvarDadosUsuario(){
 
         if (check_pedestre.isChecked() & check_motorista.isChecked()){
 
             String nome = edit_nome.getText().toString();
-            String placa = edit_placa.getText().toString();
-            String tag = edit_tag.getText().toString();
+            String placa = edit_placa.getText().toString().toUpperCase(Locale.ROOT);
+            String tag = edit_tag.getText().toString().toUpperCase(Locale.ROOT);
             String mob = spinner_def.getSelectedItem().toString();
             String car = spinner_veiculos.getSelectedItem().toString();
             String w = check_pedestre.getText().toString();
@@ -330,7 +345,7 @@ public class FormCadastro extends AppCompatActivity {
         }else if (check_pedestre.isChecked()) {
 
             String nome = edit_nome.getText().toString();
-            String tag = edit_tag.getText().toString();
+            String tag = edit_tag.getText().toString().toUpperCase(Locale.ROOT);
             String mob = spinner_def.getSelectedItem().toString();
             String w = check_pedestre.getText().toString();
 
@@ -338,8 +353,10 @@ public class FormCadastro extends AppCompatActivity {
 
             Map<String, Object> usuarios = new HashMap<>();
             usuarios.put("Nome", nome);
+            usuarios.put("Placa", null);
             usuarios.put("Tag", tag);
             usuarios.put("Mobilidade Reduzida", mob);
+            usuarios.put("Tipo de Veículo", null);
             usuarios.put("Modo de Locomoção:", w);
 
             usuarioID = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -360,7 +377,7 @@ public class FormCadastro extends AppCompatActivity {
         }else{
 
             String nome = edit_nome.getText().toString();
-            String placa = edit_placa.getText().toString();
+            String placa = edit_placa.getText().toString().toUpperCase(Locale.ROOT);
             String car = spinner_veiculos.getSelectedItem().toString();
             String d = check_motorista.getText().toString();
 
@@ -369,6 +386,8 @@ public class FormCadastro extends AppCompatActivity {
             Map<String, Object> usuarios = new HashMap<>();
             usuarios.put("Nome", nome);
             usuarios.put("Placa", placa);
+            usuarios.put("Tag", null);
+            usuarios.put("Mobilidade Reduzida", null);
             usuarios.put("Tipo de Veículo", car);
             usuarios.put("Modo de Locomoção:", d);
 
@@ -388,17 +407,16 @@ public class FormCadastro extends AppCompatActivity {
                         }
                     });
         }
-
     }
 
-    //Inicia a tela de login
+    // Inicia a tela de login
     private void TelaLogin(){
         Intent intent = new Intent(FormCadastro.this, FormLogin.class);
         startActivity(intent);
         finish();
     }
 
-    //Linka as variavéis da activity_form_cadastro.xml as variáveis de FormCadastro.java
+    // Linka as variavéis da activity_form_cadastro.xml as variáveis de FormCadastro.java
     private void IniciarComponentes(){
 
         edit_nome = findViewById(R.id.edit_nome);
@@ -416,5 +434,4 @@ public class FormCadastro extends AppCompatActivity {
         im_help = findViewById(R.id.im_help);
 
     }
-
 }

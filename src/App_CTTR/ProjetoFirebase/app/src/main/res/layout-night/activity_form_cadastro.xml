@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:orientation="vertical"
+    tools:context=".FormCadastro">
+
+    <TextView
+        android:id="@+id/title"
+        android:visibility="visible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_cadastro"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <View
+        android:id="@+id/containerComponents"
+        style="@style/ContainerComponents"
+        android:layout_width="match_parent"
+        android:layout_height="530dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        />
+
+    <EditText
+        android:id="@+id/edit_nome"
+        style="@style/Edit_Text"
+        android:layout_marginTop="55dp"
+        android:visibility="invisible"
+        android:hint="Nome"
+        android:textColorHint="@color/grey"
+        android:drawableRight="@drawable/ic_user"
+        android:inputType="text"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toTopOf="@id/containerComponents"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        app:layout_constraintEnd_toEndOf="@id/containerComponents"
+        />
+
+    <EditText
+        android:id="@+id/edit_email"
+        style="@style/Edit_Text"
+        android:visibility="invisible"
+        android:hint="Email"
+        android:textColorHint="@color/grey"
+        android:drawableRight="@drawable/ic_email"
+        android:inputType="textEmailAddress"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@id/edit_nome"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        app:layout_constraintEnd_toEndOf="@id/containerComponents"
+        />
+
+    <EditText
+        android:id="@+id/edit_senha"
+        style="@style/Edit_Text"
+        android:visibility="invisible"
+        android:hint="Senha"
+        android:textColorHint="@color/grey"
+        android:drawableRight="@drawable/ic_key"
+        android:inputType="numberPassword"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@id/edit_email"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        app:layout_constraintEnd_toEndOf="@id/containerComponents"
+        />
+
+    <EditText
+        android:id="@+id/edit_tag"
+        style="@style/Edit_Text"
+        android:visibility="invisible"
+        android:hint="Tag"
+        android:textColorHint="@color/grey"
+        android:drawableRight="@drawable/ic_baseline_tap_and_play_24"
+        android:inputType="text"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@id/edit_senha"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        app:layout_constraintEnd_toEndOf="@id/containerComponents"
+        />
+
+    <EditText
+        android:id="@+id/edit_placa"
+        style="@style/Edit_Text"
+        android:visibility="invisible"
+        android:hint="Placa"
+        android:textColorHint="@color/grey"
+        android:drawableRight="@drawable/ic_id"
+        android:inputType="text"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@id/edit_tag"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        app:layout_constraintEnd_toEndOf="@id/containerComponents"
+        />
+
+    <TextView
+        android:id="@+id/text_def"
+        android:visibility="invisible"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:text="Mobilidade Reduzida?"
+        android:textColor="@color/black"
+        android:textSize="15dp"
+        android:textStyle="bold"
+        android:layout_marginTop="12dp"
+        android:layout_marginLeft="20dp"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        app:layout_constraintTop_toBottomOf="@id/edit_placa"
+        />
+
+    <Spinner
+        android:id="@+id/spinner_def"
+        android:layout_width="match_parent"
+        android:layout_height="43dp"
+        android:layout_marginLeft="120dp"
+        style="@style/Edit_Text"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@id/edit_placa"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        app:layout_constraintEnd_toEndOf="@id/edit_nome"
+        />
+
+    <TextView
+        android:id="@+id/text_veiculo"
+        android:visibility="invisible"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:text="Tipo de Veículo"
+        android:textColor="@color/black"
+        android:textSize="15dp"
+        android:textStyle="bold"
+        android:layout_marginTop="14dp"
+        android:layout_marginLeft="20dp"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        app:layout_constraintTop_toBottomOf="@id/text_def"
+        />
+
+    <Spinner
+        android:id="@+id/spinner_veiculos"
+        android:layout_width="match_parent"
+        android:layout_height="43dp"
+        android:layout_marginLeft="120dp"
+        style="@style/Edit_Text"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_def"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        app:layout_constraintEnd_toEndOf="@id/edit_nome"
+        />
+
+    <CheckBox
+        android:id="@+id/check_pedestre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="14dp"
+        android:text="Pedestre"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toTopOf="@id/containerComponents"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        />
+
+    <CheckBox
+        android:id="@+id/check_motorista"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="190dp"
+        android:text="Motorista"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toTopOf="@id/containerComponents"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        />
+
+    <ImageView
+        android:id="@+id/im_help"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_help"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="10dp"
+        app:layout_constraintEnd_toEndOf="@id/containerComponents"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/bt_cadastrar"
+        style="@style/Button"
+        android:text="Cadastrar"
+        android:visibility="visible"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_veiculos"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

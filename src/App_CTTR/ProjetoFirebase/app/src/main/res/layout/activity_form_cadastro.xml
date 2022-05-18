@@ -8,8 +8,6 @@
     android:orientation="vertical"
     tools:context=".FormCadastro">
 
-
-
         <TextView
             android:id="@+id/title"
             android:visibility="visible"
@@ -196,6 +194,5 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
